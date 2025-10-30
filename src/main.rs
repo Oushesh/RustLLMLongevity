@@ -9,6 +9,7 @@ mod qdrant;
 mod routes; 
 mod utils; 
 
+/*
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     dotenvy::dotenv().ok();
@@ -36,5 +37,12 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
+*/
+
+#[tokio::main] // enables async/await runtime
+async fn main() -> anyhow::Result<()> {
+    println!("Hello world");
+    Ok(())
+}
 
 
