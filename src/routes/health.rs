@@ -1,4 +1,5 @@
-pub async fn health_check() -> &'static str { "OK" }
+pub async fn health_check() 
+-> &'static str { "OK" }
 
 
 /*
@@ -7,3 +8,4 @@ src/routes/chat.rs. It handles /chat
 --> orchestrates RAG Flow (LLM call +search).
 
 */
+
