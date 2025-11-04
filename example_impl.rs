@@ -1,0 +1,23 @@
+//Code for concept understanding in Rust: 
+
+struct Rectangle {
+    width:u32,
+    height:u32,
+}
+
+impl Rectangle {
+    //Associate function (no self)
+    fn new (width:u32, height:u32) -> Self{
+        Self {width, height}
+    }
+
+    //Method (takes self) 
+    fn area(&self) ->u32{
+        self.width*self.height
+    }
+
+
+    fn is_square(&self) -> bool {
+        
+    }
+}
