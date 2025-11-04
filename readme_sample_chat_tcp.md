@@ -19,3 +19,12 @@ Fancy shiny features:
 
 Chat server listens for incoming tcp connections. Server can access several types of message: 
 
+/list -- list all available rooms,
+/join name -- join room, if room does not exist
+/name -- set session name
+/some message -- just string, send mesage to all peers in the same room.
+
+
+* Multiple clients try to get listen to server. if client does not respond within 10s connection gets dropped.
+
+
