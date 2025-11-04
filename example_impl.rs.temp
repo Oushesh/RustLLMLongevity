@@ -18,6 +18,12 @@ impl Rectangle {
 
 
     fn is_square(&self) -> bool {
-        
+        self.width == self.height
     }
+}
+
+fn main (){
+    let rect = Rectangle::new(10,20);
+    println!("Area: {}",rect.area());
+    println!("Is square? {}",rect.is_square());
 }
