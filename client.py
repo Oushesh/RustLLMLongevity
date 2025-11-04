@@ -69,9 +69,7 @@ if __name__ == "__main__":
         args.host, port = args.host.split(":",1)
         args.port = int(port)
 
-
     url = f"https//{args.host}:{args.port}/ws"   #ws --> websocekt
-
 
     print ("""
         /list list all available rooms
