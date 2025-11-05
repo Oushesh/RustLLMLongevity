@@ -1,27 +1,13 @@
-//! 'Chatserver' is an actor. It maintains a list
-//of connection client sessions.
-//! It also manages available rooms.
-
-
-//! `ChatServer` is an actor. It maintains a list of connection client sessions.
-//! It also manages available rooms. Peers send messages to other peers in same
+//! `ChatServer` is an actor. It maintains list of connection client session.
+//! And manages available rooms. Peers send messages to other peers in same
 //! room through `ChatServer`.
 
-use std::{
-    collections::{HashMap, HashSet},
-    sync::{
-        Arc,
-        atomic::{AtomicUsize, Ordering},
-    },
-};
+use std::collections::{HashMap, HashSet};
 
 use actix::prelude::*;
 use rand::Rng as _;
 
-/// Chat server sends this messages to session
-#[derive(Message)]
-#[rtype(result = "()")]
-pub struct Message(pub String);
+use crate::session;
 
 /// Message for chat server communications
 ///
@@ -29,7 +15,7 @@ pub struct Message(pub String);
 #[derive(Message)]
 #[rtype(u64)]
 pub struct Connect {
-    pub addr: Recipient<Message>,
+    pub addr: Recipient<session::Message>,
 }
 
 /// Session is disconnected
@@ -42,7 +28,7 @@ pub struct Disconnect {
 /// Send message to specific room
 #[derive(Message)]
 #[rtype(result = "()")]
-pub struct ClientMessage {
+pub struct Message {
     /// Id of the client session
     pub id: u64,
     /// Peer message
@@ -62,25 +48,21 @@ impl actix::Message for ListRooms {
 #[derive(Message)]
 #[rtype(result = "()")]
 pub struct Join {
-    /// Client ID
+    /// Client id
     pub id: u64,
-
     /// Room name
     pub name: String,
 }
 
-/// `ChatServer` manages chat rooms and responsible for coordinating chat session.
-///
-/// Implementation is very naïve.
-#[derive(Debug)]
+/// `ChatServer` manages chat rooms and responsible for coordinating chat
+/// session. implementation is super primitive
 pub struct ChatServer {
-    sessions: HashMap<u64, Recipient<Message>>,
+    sessions: HashMap<u64, Recipient<session::Message>>,
     rooms: HashMap<String, HashSet<u64>>,
-    visitor_count: Arc<AtomicUsize>,
 }
 
-impl ChatServer {
-    pub fn new(visitor_count: Arc<AtomicUsize>) -> ChatServer {
+impl Default for ChatServer {
+    fn default() -> ChatServer {
         // default room
         let mut rooms = HashMap::new();
         rooms.insert("main".to_owned(), HashSet::new());
@@ -88,7 +70,6 @@ impl ChatServer {
         ChatServer {
             sessions: HashMap::new(),
             rooms,
-            visitor_count,
         }
     }
 }
@@ -100,7 +81,7 @@ impl ChatServer {
             for id in sessions {
                 if *id != skip_id {
                     if let Some(addr) = self.sessions.get(id) {
-                        addr.do_send(Message(message.to_owned()));
+                        addr.do_send(session::Message(message.to_owned()));
                     }
                 }
             }
@@ -132,10 +113,7 @@ impl Handler<Connect> for ChatServer {
         self.sessions.insert(id, msg.addr);
 
         // auto join session to main room
-        self.rooms.entry("main".to_owned()).or_default().insert(id);
-
-        let count = self.visitor_count.fetch_add(1, Ordering::SeqCst);
-        self.send_message("main", &format!("Total visitors {count}"), 0);
+        self.rooms.get_mut("main").unwrap().insert(id);
 
         // send id back
         id
@@ -168,10 +146,10 @@ impl Handler<Disconnect> for ChatServer {
 }
 
 /// Handler for Message message.
-impl Handler<ClientMessage> for ChatServer {
+impl Handler<Message> for ChatServer {
     type Result = ();
 
-    fn handle(&mut self, msg: ClientMessage, _: &mut Context<Self>) {
+    fn handle(&mut self, msg: Message, _: &mut Context<Self>) {
         self.send_message(&msg.room, msg.msg.as_str(), msg.id);
     }
 }
@@ -211,8 +189,10 @@ impl Handler<Join> for ChatServer {
             self.send_message(&room, "Someone disconnected", 0);
         }
 
-        self.rooms.entry(name.clone()).or_default().insert(id);
-
+        if self.rooms.get_mut(&name).is_none() {
+            self.rooms.insert(name.clone(), HashSet::new());
+        }
         self.send_message(&name, "Someone connected", id);
+        self.rooms.get_mut(&name).unwrap().insert(id);
     }
 }
