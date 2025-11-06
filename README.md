@@ -43,6 +43,13 @@ The entrypoint of the app is src/main.rs
 This is my app bootstrap. I keep it lightweight and delegate everything to app.rs
 
 
+Usually cargo build downloads all the dependencies from cargo repositoeires like npm would do for typescript.
 
 
-Usually cargo build downloads all the dependencies from cargo repositoeires like npm 
+On the otherside: Use Rayon For Data Parallel stuffs
+
+https://github.com/rayon-rs/rayon Rayon
+
+
+
+
