@@ -57,4 +57,99 @@ RustLLMLongevity/
 git clone https://github.com/yourusername/RustLLMLongevity.git
 cd RustLLMLongevity
 cp .env.example .env
+```
+
+### 2. Run with Docker
+docker-compose up --build
+
+This starts:
+Postgres (for Prisma ORM)
+Qdrant (for vector embeddings)
+The Rust API backend (Axum)
+
+### 3. Local Development
+Install Rust + Cargo (nightly or stable).
+
+cargo build 
+cargo run
+
+For hot reloading during development:
+```bash
+./scripts/dev.sh
+```
+
+Example src/main.rs
+
+use std::net::SocketAddr;
+use dotenv::dotenv;
+
+mod app;
+mod config;
+
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    dotenv().ok();
+
+    let cfg = config::Config::from_env()?;
+    let app = app::build_router(cfg.clone()).await?;
+
+    let addr = SocketAddr::from(([0, 0, 0, 0], cfg.port));
+    println!("🚀 Server running at http://{addr}");
+
+    axum::Server::bind(&addr)
+        .serve(app.into_make_service())
+        .await?;
+
+    Ok(())
+}
+
+⚙️ Parallel Processing with Rayon
+Use Rayon for data-parallel operations like embedding generation: 
+
+use rayon::prelude::*;
+
+fn process_embeddings(data: Vec<String>) -> Vec<f32> {
+    data.par_iter()
+        .flat_map(|text| create_embedding(text))
+        .collect()
+}
+
+
+🧠 FeaturesAxum — fast, async web framework
+Prisma ORM — type-safe database layer
+Qdrant — vector search and RAG support
+Rayon — multi-threaded data parallelism
+LLM Integration — OpenAI / Anthropic APIs for intelligent chat and analysis
+Structured Modularity — clean separation of config, routes, and utils
+
+
+🧪 Testing
+cargo test
+
+Health Endpoints: 
+GET /health — Health check (DB + vector store)
+POST /chat — LLM chat & RAG pipeline
+GET /search?q=term — Semantic search via Qdrant
+
+Example Use Cases
+Tracking and analyzing biomarkers (hair, skin, testosterone)
+Generating personalized longevity insights
+Combining LLM reasoning + structured health data
+
+
+🧩 Tech Stack
+Layer	              Tool/Library	              Purpose
+Web	                Axum                        Async HTTP framework
+ORM	                Prisma Client Rust          Type-safe DB access
+Vector DB	          Qdrant                      Embedding search & retrieval
+Parallelism	        Rayon                       CPU-bound task parallelism
+LLM APIs	          OpenAI/Anthropic	          RAG + natural language insights
+Container	          Docker + Compose	          Reproducible deployment
+
+
+License
+MIT License © 2025 Your Name
+Built with ❤️ in Rust
+---
+Would you like me to include a minimal `app.rs` example next — showing how routes and layers are composed (with Axum + Prisma client + Qdrant)?
 
