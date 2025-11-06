@@ -148,7 +148,7 @@ Container	          Docker + Compose	          Reproducible deployment
 
 
 License
-MIT License © 2025 Your Name
+MIT License © 2025 Oushesh
 Built with ❤️ in Rust
 ---
 Would you like me to include a minimal `app.rs` example next — showing how routes and layers are composed (with Axum + Prisma client + Qdrant)?
