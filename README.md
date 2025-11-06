@@ -45,3 +45,16 @@ RustLLMLongevity/
 │ └── seed_data.rs # Script to seed initial DB data
 │
 └── README.md # Project documentation
+
+
+
+---
+
+## 🚀 Quick Start
+
+### 1. Clone & Configure
+```bash
+git clone https://github.com/yourusername/RustLLMLongevity.git
+cd RustLLMLongevity
+cp .env.example .env
+
