@@ -5,6 +5,9 @@
 This service uses **Axum** for web routing, **Prisma ORM** for database management, and **Qdrant** for semantic vector search and retrieval-augmented generation (RAG).  
 Parallel data processing is powered by **Rayon** for optimal performance on CPU-intensive tasks.
 
+The app to find the longevity olive oil and which ones exist is found here: 
+<link to repo>
+
 ---
 
 ## 📁 Project Structure
